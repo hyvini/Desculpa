@@ -1,126 +1,295 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Encontre os Corações 💘</title>
+  <title>Desculpa, amor - Um pedido especial</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat&display=swap');
+
+    /* Reset e estilos básicos */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background: linear-gradient(to bottom, #ffe0ec, #fcb7cf);
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #fceabb, #f8b500);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #4a2c00;
+      padding: 20px;
       overflow-x: hidden;
     }
-
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 25px;
+      max-width: 600px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
     h1 {
-      text-align: center;
-      font-size: 2.5em;
-      margin: 30px 10px 20px;
-      color: #a0004d;
-    }
-
-    #counter {
-      text-align: center;
-      font-size: 1.5em;
-      color: #700034;
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
       margin-bottom: 20px;
+      color: #d16a0f;
     }
-
-    #game-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-      gap: 25px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: 0 auto;
-      justify-items: center;
+    p {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      letter-spacing: 0.03em;
     }
-
-    .heart {
-      width: 60px;
-      height: 60px;
-      background-image: url('https://i.imgur.com/9Y5aBvI.png');
-      background-size: cover;
+    button {
+      background: #d16a0f;
+      border: none;
+      padding: 12px 30px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(209,106,15,0.6);
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #e94e77;
+      box-shadow: 0 6px 20px rgba(233,78,119,0.8);
+    }
+    input[type="password"] {
+      font-size: 1.2rem;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #d16a0f;
+      width: 70%;
+      max-width: 300px;
+      margin-bottom: 15px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    input[type="password"]:focus {
+      border-color: #e94e77;
+      box-shadow: 0 0 8px #e94e77;
+    }
+    .hint {
+      font-style: italic;
+      color: #a3580a;
+      margin-bottom: 25px;
+      user-select: none;
+    }
+    .error-message {
+      color: #e94e77;
+      font-weight: 700;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+    .heart {
+      font-size: 4rem;
+      color: #e94e77;
+      animation: pulse 1.5s infinite;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
     }
 
-    .heart:hover {
-      transform: scale(1.3);
-    }
-
-    .found {
-      opacity: 0.3;
-      pointer-events: none;
-      transform: scale(0.8);
-    }
-
-    #victory-message {
+    /* Paginação - só mostra o conteúdo ativo */
+    .page {
       display: none;
-      background: white;
-      color: #6a0033;
-      text-align: center;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 500px;
-      margin: 40px auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      animation: pop 0.6s ease;
+      animation: fadeIn 0.7s ease forwards;
+    }
+    .page.active {
+      display: block;
     }
 
-    @keyframes pop {
-      0% { transform: scale(0.5); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    /* Navegação */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .nav-buttons button:disabled {
+      background: #d6d6d6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Fundo com corações flutuantes */
+    .heart-bubble {
+      position: fixed;
+      font-size: 1.5rem;
+      color: #f76c6c;
+      animation: floatUp 10s linear infinite;
+      user-select: none;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-20vh) scale(1.3);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>💗 Encontre todos os 20 corações escondidos!</h1>
-  <div id="counter">Corações encontrados: 0/20</div>
-  <div id="game-container"></div>
-  <div id="victory-message">
-    <h2>🎉 Você encontrou todos os corações! 🎉</h2>
-    <p>Parabéns, amor! Você venceu a primeira fase... prepare-se para a próxima surpresa 💌</p>
+
+  <div class="container" role="main" aria-label="Mensagem de desculpas com senha">
+    
+    <!-- Página senha -->
+    <section id="page-password" class="page active" aria-live="polite">
+      <div class="heart" aria-hidden="true">❤️</div>
+      <h1>Oioi, amor da minha vida</h1>
+      <p>Antes de entrar aqui, me diga a senha para você acessar essa mensagem especial.</p>
+      <p class="hint">Dica: eu te devo um pedido de <strong>?</strong></p>
+
+      <input type="password" id="passwordInput" aria-label="Campo para digitar senha" autocomplete="off" />
+      <br />
+      <button id="submitPassword">Entrar</button>
+      <p id="errorMessage" class="error-message" aria-live="assertive" role="alert" style="display:none;"></p>
+    </section>
+
+    <!-- Página 1 -->
+    <section id="page-1" class="page" aria-live="polite">
+      <div class="heart" aria-hidden="true">❤️</div>
+      <h1>Meu amor, me desculpa...</h1>
+      <p>Eu sei que hoje não consegui te dar toda a atenção que você merece.</p>
+      <p>Fiquei pensando nisso, pq eu sei que isso te incomoda e me fez perceber o quanto eu quero estar mais presente para você.</p>
+      <div class="nav-buttons">
+        <button disabled>Voltar</button>
+        <button id="next1">Próximo</button>
+      </div>
+    </section>
+
+    <!-- Página 2 -->
+    <section id="page-2" class="page" aria-live="polite">
+      <div class="heart" aria-hidden="true">❤️</div>
+      <h1>Promessa do amanhã</h1>
+      <p>Amanhã eu serei todo seu, sem distrações, só você e eu.</p>
+      <p>Quero escutar cada palavra, sentir cada sorriso e mostrar o quanto você é importante pra mim.</p>
+      <div class="nav-buttons">
+        <button id="back2">Voltar</button>
+        <button id="next2">Próximo</button>
+      </div>
+    </section>
+
+    <!-- Página 3 -->
+    <section id="page-3" class="page" aria-live="polite">
+      <div class="heart" aria-hidden="true">❤️</div>
+      <h1>Você merece o melhor</h1>
+      <p>Você merece sempre o melhor de mim, em cada momento.</p>
+      <p>Eu te amo mais do que palavras podem expressar, quero ser a minha melhor versão por você, e amanhã, vou te fazer feliz ksksk.</p>
+      <div class="nav-buttons">
+        <button id="back3">Voltar</button>
+        <button id="next3">Próximo</button>
+      </div>
+    </section>
+
+    <!-- Página 4 -->
+    <section id="page-4" class="page" aria-live="polite">
+      <div class="heart" aria-hidden="true">❤️</div>
+      <h1>Obrigado por ser minha luz</h1>
+      <p>Obrigado por ser essa luz tão linda na minha vida, eu amo você.</p>
+      <p>Sei que vamos passar por muita coisa ainda, mas quero ser o namorado que você merece.</p>
+      <p>Com todo meu carinho e amor,</p>
+      <p><strong>[Vinícius]</strong></p>
+      <div class="nav-buttons">
+        <button id="back4">Voltar</button>
+        <button id="finish" disabled>Fim</button>
+      </div>
+    </section>
+
   </div>
 
+  <!-- Corações flutuantes -->
+  <div class="heart-bubble" style="left: 15%; animation-delay: 0s;">❤️</div>
+  <div class="heart-bubble" style="left: 40%; font-size: 2rem; animation-delay: 2s;">❤️</div>
+  <div class="heart-bubble" style="left: 70%; animation-delay: 4s;">❤️</div>
+  <div class="heart-bubble" style="left: 85%; font-size: 2.2rem; animation-delay: 1s;">❤️</div>
+  <div class="heart-bubble" style="left: 30%; font-size: 1.8rem; animation-delay: 3.5s;">❤️</div>
+
   <script>
-    const container = document.getElementById('game-container');
-    const counter = document.getElementById('counter');
-    const victoryMessage = document.getElementById('victory-message');
+    const passwordInput = document.getElementById('passwordInput');
+    const submitPassword = document.getElementById('submitPassword');
+    const errorMessage = document.getElementById('errorMessage');
 
-    let totalHearts = 20;
-    let foundHearts = 0;
+    const pages = {
+      password: document.getElementById('page-password'),
+      1: document.getElementById('page-1'),
+      2: document.getElementById('page-2'),
+      3: document.getElementById('page-3'),
+      4: document.getElementById('page-4')
+    };
 
-    let hearts = [];
+    const next1 = document.getElementById('next1');
+    const next2 = document.getElementById('next2');
+    const next3 = document.getElementById('next3');
+    const back2 = document.getElementById('back2');
+    const back3 = document.getElementById('back3');
+    const back4 = document.getElementById('back4');
+    const finish = document.getElementById('finish');
 
-    for (let i = 0; i < 60; i++) {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
+    const correctPassword = 'brava';
 
-      const isReal = i < totalHearts;
-      heart.dataset.real = isReal;
-
-      heart.addEventListener('click', () => {
-        if (heart.dataset.real === "true" && !heart.classList.contains('found')) {
-          heart.classList.add('found');
-          foundHearts++;
-          counter.textContent = `Corações encontrados: ${foundHearts}/${totalHearts}`;
-
-          if (foundHearts === totalHearts) {
-            victoryMessage.style.display = 'block';
-          }
-        } else {
-          heart.style.transform = "scale(0.8)";
-          setTimeout(() => heart.style.transform = "scale(1)", 150);
-        }
-      });
-
-      hearts.push(heart);
+    function showPage(pageKey) {
+      for (const key in pages) {
+        pages[key].classList.remove('active');
+      }
+      pages[pageKey].classList.add('active');
+      errorMessage.style.display = 'none';
+      passwordInput.value = '';
+      passwordInput.focus();
     }
 
-    hearts.sort(() => Math.random() - 0.5);
-    hearts.forEach(h => container.appendChild(h));
+    submitPassword.addEventListener('click', () => {
+      const entered = passwordInput.value.trim().toLowerCase();
+      if (entered === correctPassword) {
+        showPage('1');
+      } else {
+        errorMessage.textContent = 'Ops, senha incorreta! Tente novamente, meu amor.';
+        errorMessage.style.display = 'block';
+      }
+    });
+
+    passwordInput.addEventListener('keyup', e => {
+      if (e.key === 'Enter') {
+        submitPassword.click();
+      }
+    });
+
+    // Navegação das páginas
+    next1.addEventListener('click', () => showPage('2'));
+    next2.addEventListener('click', () => showPage('3'));
+    next3.addEventListener('click', () => showPage('4'));
+
+    back2.addEventListener('click', () => showPage('1'));
+    back3.addEventListener('click', () => showPage('2'));
+    back4.addEventListener('click', () => showPage('3'));
+
+    finish.addEventListener('click', () => {
+      alert('Obrigado por ler, meu amor! Te amo muito ❤️');
+      finish.disabled = true;
+    });
+
+    // Foco inicial
+    passwordInput.focus();
   </script>
 </body>
 </html>
